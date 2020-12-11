@@ -1,6 +1,4 @@
-﻿// Learn more about F# at http://docs.microsoft.com/dotnet/fsharp
-
-open System
+﻿open System
 open System.IO
 
 let readFile (filePath:String) = seq {
@@ -44,8 +42,6 @@ type SeatMap = Map<SeatPos,Seat>
        
 let toSeatMap (seats:Seat[]) : SeatMap = seats |> Seq.map (fun (s:Seat) -> ((s.pos),s)) |> Map.ofSeq
 
-// Define a function to construct a message to print
-
 let changeSeatTask1(seats:SeatMap) (seat:Seat) : Seat =
     if seat.floor then seat
     else 
@@ -81,15 +77,12 @@ let changeSeatTask2(seats:SeatMap) (seat:Seat) : Seat =
         else if occupied > 4 then
             seat.free ()
         else
-            seat 
-        
-    
+            seat     
 let iterateSeating (seats:Seat[]) (seatMap:SeatMap) (changeSeat:SeatMap -> Seat -> Seat): Seat[] =
     seats |> Seq.map (changeSeat seatMap) |> Seq.toArray  
 
 let rec iterateUntilStable (seats:Seat[]) (maxDepth:int) (changeSeat:SeatMap -> Seat -> Seat): Seat[] =
     printf "."
-    // printfn "Iterate until stable %A %d" seats maxDepth  
     let seatMap = toSeatMap seats
     let newSeats = iterateSeating seats seatMap changeSeat 
     if newSeats = seats || maxDepth = 0 then
@@ -109,28 +102,13 @@ let main argv =
     let seats = fileInput
                 |> Seq.mapi toSeats
                 |> Seq.concat
-//                |> Seq.filter (fun (s:Seat) -> not s.floor)
-                |> Seq.toArray 
-    // let iter1 = iterateSeating seats (toSeatMap seats)
-    // let iter2 = iterateSeating iter1 (toSeatMap iter1) 
-    let stableSeats1 = iterateUntilStable seats 1000000000 changeSeatTask1
-    
-    // printfn "Hello world %A %A" seats (toSeatMap seats)
-    // printfn "Stable: %A" stableSeats
+                |> Seq.toArray
+                
+    let stableSeats1 = iterateUntilStable seats 1000000000 changeSeatTask1    
     let occupied1 = countOccupied stableSeats1
     printfn "Answer 1: %d" occupied1 
 
     let stableSeats2 = iterateUntilStable seats 3000 changeSeatTask2
     let occupied2 = countOccupied stableSeats2
-    printfn "Answer 2: %d" occupied2 
-
-    //printfn "Iter1 :%A" iter1
-    //printfn "Iter2 :%A" iter2
-     
-//    let a = [|Seat('#',1L,2L);Seat('.',2L,2L)|]
-//    let b = [|Seat('#',1L,2L);Seat('.',2L,2L)|]
-//    let s1 = Seat('#',1L,1L)
-//    let s2 = Seat('#',1L,1L)  
-//    printfn "eq = %A %A" (a = b) (s1 = s2)
-    
+    printfn "Answer 2: %d" occupied2   
     0 // return an integer exit code
